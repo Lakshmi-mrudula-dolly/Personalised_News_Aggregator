@@ -1,0 +1,112 @@
+/* App.css */
+
+/* General Styling */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: #333;
+}
+
+.app-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.app-title {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Category Selection */
+.category-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.category-button {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background: #0078d7;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.category-button:hover {
+  background: #005bb5;
+  transform: scale(1.05);
+}
+
+.category-button.active {
+  background: #ff9800;
+  color: #fff;
+}
+
+/* Category Message */
+.category-message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Error Message */
+.error-message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: red;
+  font-weight: bold;
+}
+.dropdown-container {
+  margin: 20px 0;
+}
+
+.dropdown-container label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.dropdown-container select {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.back-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #005bb5;
+}

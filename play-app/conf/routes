@@ -1,0 +1,22 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                           controllers.HomeController.index()
+
+POST    /api/login          controllers.UserController.login(request: play.mvc.Http.Request)
+# Routes for User Authentication and Signup
+POST    /api/signup            controllers.UserController.signup(request: play.mvc.Http.Request)
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+# GET   /api/news    controllers.NewsController.getNews(category: String, page: Int)
+
+# GET     /api/news/:category      controllers.NewsController.getNews(category: String, page: Int ?= 1) 
+GET    /api/recommended-news/:userId    controllers.NewsController.getRecommendedNews(userId)
+# GET     /news           controllers.NewsController.getNews(category: String, page: Integer)
+GET     /news/recommended  controllers.NewsController.getRecommendedNews(userId: String)
+
+# GET     /api/news/:category     controllers.NewsController.getNews(category, page)
+GET  /api/news/:category controllers.NewsController.getNews(category: String, page: Int ?= 1, hl: String ?= "en")
+POST /api/save-preferences controllers.UserController.savePreferences(request: play.mvc.Http.Request)
