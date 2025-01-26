@@ -23,28 +23,20 @@ public class UserService {
         Document user = users.find(new Document("email", email).append("password", password)).first();
         return user != null;
     }
-    public boolean registerUser(String username, String email, String password, int age) {
+        public boolean registerUser(String username, String email, String password, List<String> preferences) {
         MongoDatabase database = mongoClient.getDatabase("newsApp");
         MongoCollection<Document> users = database.getCollection("users");
-        MongoDatabase db=mongoClient.getDatabase("newsApp");
-        MongoCollection<Document> us=db.getCollection("users");
-        Document existingUser = users.find(new Document("email", email)).first();
-        if (existingUser != null) {
-            return false; // User already exists
-        }
-    
+
+        // Insert new user with preferences field
         Document newUser = new Document("username", username)
                 .append("email", email)
                 .append("password", password)
-                .append("age", age);
-                // .append("preferences", preferences);
-    
+                .append("preferences", preferences); // Store preferences here
+
         users.insertOne(newUser);
-        Document nu=new Document("email",email)
-                    .append("password",password);
-        us.insertOne(nu);
         return true;
     }
+
     public String getUserPreferences(String userId) {
         MongoDatabase database = mongoClient.getDatabase("newsApp");
         MongoCollection<Document> users = database.getCollection("users");

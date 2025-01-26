@@ -57,7 +57,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router backgroundColor='red'>
       <div className="app-container">
         <h1 className="app-title">📰 News Aggregator</h1>
         <Routes>

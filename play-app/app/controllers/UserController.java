@@ -38,7 +38,7 @@ public class UserController extends Controller {
     }
 
     // /*final 
-    public Result signup(Http.Request request) {
+       public Result signup(Http.Request request) {
         JsonNode requestBody = request.body().asJson();
         if (requestBody == null) {
             return badRequest(Json.newObject().put("error", "Invalid JSON"));
@@ -47,42 +47,16 @@ public class UserController extends Controller {
         String username = requestBody.get("username").asText();
         String email = requestBody.get("email").asText();
         String password = requestBody.get("password").asText();
-        int age = requestBody.get("age").asInt();
-        // List<String> preferences = Json.fromJson(requestBody.get("preferences"), List.class);
+        List<String> preferences = Json.fromJson(requestBody.get("preferences"), List.class); // Store as preferences
 
-        boolean isRegistered = userService.registerUser(username, email, password, age);
+        boolean isRegistered = userService.registerUser(username, email, password, preferences);
         if (isRegistered) {
             return ok(Json.newObject().put("message", "Signup successful"));
         } else {
             return badRequest(Json.newObject().put("error", "User already exists"));
         }
     }
-    /* 
-    public Result signup(Http.Request request) {
-        JsonNode requestBody = request.body().asJson();
-        if (requestBody == null) {
-            return badRequest(Json.newObject().put("error", "Invalid JSON"));
-        }
     
-        try {
-            String username = requestBody.get("username").asText();
-            String email = requestBody.get("email").asText();
-            String password = requestBody.get("password").asText();
-            int age = requestBody.get("age").asInt();
-            List<String> preferences = Json.fromJson(requestBody.get("preferences"), List.class);
-    
-            boolean isRegistered = userService.registerUser(username, email, password, age, preferences);
-            if (isRegistered) {
-                return ok(Json.newObject().put("message", "Signup successful"));
-            } else {
-                return badRequest(Json.newObject().put("error", "User already exists"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            return internalServerError(Json.newObject().put("error", "Failed to register user: " + e.getMessage()));
-        }
-    }
-    */
     public Result getNews(Http.Request request) {
         String categories = request.getQueryString("categories");
         if (categories == null || categories.isEmpty()) {
