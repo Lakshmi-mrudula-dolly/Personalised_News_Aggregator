@@ -6,17 +6,24 @@
 GET     /                           controllers.HomeController.index()
 
 POST    /api/login          controllers.UserController.login(request: play.mvc.Http.Request)
-# Routes for User Authentication and Signup
+
 POST    /api/signup            controllers.UserController.signup(request: play.mvc.Http.Request)
-# Map static resources from the /public folder to the /assets URL path
+
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-# GET   /api/news    controllers.NewsController.getNews(category: String, page: Int)
 
-# GET     /api/news/:category      controllers.NewsController.getNews(category: String, page: Int ?= 1) 
-GET    /api/recommended-news/:userId    controllers.NewsController.getRecommendedNews(userId)
-# GET     /news           controllers.NewsController.getNews(category: String, page: Integer)
-GET     /news/recommended  controllers.NewsController.getRecommendedNews(userId: String)
+POST    /api/user/account    controllers.UserController.getUser(request: play.mvc.Http.Request)
 
-# GET     /api/news/:category     controllers.NewsController.getNews(category, page)
-GET  /api/news/:category controllers.NewsController.getNews(category: String, page: Int ?= 1, hl: String ?= "en")
-POST /api/save-preferences controllers.UserController.savePreferences(request: play.mvc.Http.Request)
+
+POST    /api/user/update     controllers.UserController.updatePreferences(request: play.mvc.Http.Request)
+# Fetch news by category and language
+GET     /api/news/category/:category/:language     controllers.NewsController.getCategoryNews(category, language)
+
+# Fetch personalized news feed based on user preferences
+GET     /api/news/my-feed   controllers.NewsController.getMyFeed(request: play.mvc.Http.Request)
+
+
+# Update likes/dislikes for a news cat
+
+
+
+

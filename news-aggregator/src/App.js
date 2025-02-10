@@ -1,143 +1,67 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import News from "./components/News";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import axios from "axios";
-import "./App.css";
+import Home from "./pages/Home";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("en"); // Default language
-  const [userEmail, setUserEmail] = useState(""); // Store user email after login
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return sessionStorage.getItem("isLoggedIn") === "true";
+  });
 
-  // Save preferences in MongoDB when language/category changes
-  const savePreferences = useCallback(async () => {
-    try {
-      await axios.post("http://localhost:9000/api/save-preferences", {
-        email: userEmail,
-        language: selectedLanguage,
-        category: selectedCategory,
-      });
-    } catch (err) {
-      console.error("Failed to save preferences:", err);
-    }
-  }, [userEmail, selectedLanguage, selectedCategory]); // Dependencies
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    sessionStorage.setItem("selectedCategory", selectedCategory);
-    sessionStorage.setItem("selectedLanguage", selectedLanguage);
-    if (isLoggedIn) savePreferences(); // Call savePreferences when logged in
-  }, [selectedCategory, selectedLanguage, isLoggedIn, savePreferences]);
+    sessionStorage.setItem("isLoggedIn", isLoggedIn);
 
-  // Handle user login
-  const handleLogin = (success, errorMessage, email) => {
-    if (success) {
-      setIsLoggedIn(true);
-      setError("");
-      setUserEmail(email); // Store email after successful login
-    } else {
-      setError(errorMessage || "Invalid credentials");
+    if (isLoggedIn) {
+      const storedUser = JSON.parse(sessionStorage.getItem("user")); // Retrieve user from sessionStorage
+      if (storedUser) {
+        setUser(storedUser);
+      } else {
+        fetchUserData(); // Fetch from backend if not in sessionStorage
+      }
+    }
+  }, [isLoggedIn]);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("http://localhost:9000/api/user/account", {
+        method: "POST",  // Change from GET to POST
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: sessionStorage.getItem("userEmail") }) // Include user email
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP Error ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log("Fetched user data:", data);
+      setUser(data);
+    } catch (error) {
+      console.error("Error fetching user:", error);
     }
   };
+  
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-  };
-
-  const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value);
-  };
-
-  // Clear the selected category to navigate back to the home view
-  const handleBackToHome = () => {
-    setSelectedCategory("");
+  const handleLogin = (success, userData) => {
+    if (success) {
+      setIsLoggedIn(true);
+      sessionStorage.setItem("user", JSON.stringify(userData)); // Store user in sessionStorage
+      setUser(userData);
+    }
   };
 
   return (
-    <Router backgroundColor='red'>
-      <div className="app-container">
-        <h1 className="app-title">📰 News Aggregator</h1>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isLoggedIn ? (
-                <div>
-                  {/* Language Selection */}
-                  <div className="dropdown-container">
-                    <label>Select Language:</label>
-                    <select value={selectedLanguage} onChange={handleLanguageChange}>
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                      <option value="it">Italian</option>
-                      <option value="pt">Portuguese</option>
-                      <option value="ru">Russian</option>
-                      <option value="zh-CN">Chinese (Simplified)</option>
-                      <option value="ja">Japanese</option>
-                      <option value="ko">Korean</option>
-                      <option value="hi">Hindi</option>
-                      <option value="ar">Arabic</option>
-                      <option value="bn">Bengali</option>
-                      <option value="nl">Dutch</option>
-                      <option value="el">Greek</option>
-                      <option value="iw">Hebrew</option>
-                      <option value="id">Indonesian</option>
-                      <option value="ms">Malay</option>
-                      <option value="tr">Turkish</option>
-                      <option value="vi">Vietnamese</option>
-                      <option value="ta">Tamil</option>
-                      <option value="kn">Kannada</option>
-                      <option value="mr">Marathi</option>
-                      <option value="pa">Punjabi</option>
-                      <option value="te">Telugu</option>
-                    </select>
-                  </div>
-
-                  {/* Category Selection */}
-                  <div className="category-container">
-                    <h2>Select a News Category:</h2>
-                    <div className="category-buttons">
-                      {["sports", "technology", "cinema", "politics"].map((category) => (
-                        <button
-                          key={category}
-                          onClick={() => handleCategorySelect(category)}
-                          className={`category-button ${
-                            selectedCategory === category ? "active" : ""
-                          }`}
-                        >
-                          {category.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                    {selectedCategory ? (
-                      <div>
-                        <News category={selectedCategory} language={selectedLanguage} />
-                        <button className="back-button" onClick={handleBackToHome}>
-                          Back to Home
-                        </button>
-                      </div>
-                    ) : (
-                      <p>Please select a category to see news.</p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <Login onLogin={(success, error, email) => handleLogin(success, error, email)} />
-                  {error && <p className="error-message">{error}</p>}
-                </>
-              )
-            }
-          />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/*" element={isLoggedIn ? <Home user={user} /> : <Navigate to="/login" />} />
+      </Routes>
     </Router>
   );
 }

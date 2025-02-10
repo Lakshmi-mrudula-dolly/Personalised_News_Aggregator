@@ -23,6 +23,13 @@ public class UserService {
         Document user = users.find(new Document("email", email).append("password", password)).first();
         return user != null;
     }
+    public boolean isUserExists(String email) {
+        MongoDatabase database = mongoClient.getDatabase("newsApp");
+        MongoCollection<Document> users = database.getCollection("users");
+
+        Document user = users.find(new Document("email", email)).first();
+        return user != null; // Return true if a user with this email exists
+    }
         public boolean registerUser(String username, String email, String password, List<String> preferences) {
         MongoDatabase database = mongoClient.getDatabase("newsApp");
         MongoCollection<Document> users = database.getCollection("users");
@@ -36,32 +43,38 @@ public class UserService {
         users.insertOne(newUser);
         return true;
     }
-
-    public String getUserPreferences(String userId) {
-        MongoDatabase database = mongoClient.getDatabase("newsApp");
-        MongoCollection<Document> users = database.getCollection("users");
-        
-        Document user = users.find(new Document("userId", userId)).first();
-        if (user != null && user.containsKey("preferences")) {
-            return String.join(",", user.getList("preferences", String.class));
-        }
-        return "general";
+        public Document getUserDetails(String email) {
+    // Ensure the email is not null or empty
+    if (email == null || email.trim().isEmpty()) {
+        throw new IllegalArgumentException("Email cannot be null or empty");
     }
-    public boolean saveUserPreferences(String email, String language, String category) {
+
+    // Access the database and collection
+    MongoDatabase database = mongoClient.getDatabase("newsApp");
+    MongoCollection<Document> users = database.getCollection("users");
+
+    // Find the user by email
+    Document user = users.find(new Document("email", email)).first();
+
+    // Handle if the user is not found
+    if (user == null) {
+        throw new IllegalStateException("User not found for email: " + email);
+    }
+
+    return user;
+}
+    public boolean updateUserPreferences(String email, List<String> categories) {
         MongoDatabase database = mongoClient.getDatabase("newsApp");
         MongoCollection<Document> users = database.getCollection("users");
-    
+
         Document user = users.find(new Document("email", email)).first();
         if (user != null) {
-            Document preferenceEntry = new Document("language", language)
-                                        .append("category", category)
-                                        .append("timestamp", System.currentTimeMillis());
             users.updateOne(
                 new Document("email", email),
-                new Document("$push", new Document("preferences_history", preferenceEntry))
+                new Document("$set", new Document("preferences", categories))
             );
             return true;
         }
         return false;
-    } 
+    }
 }
