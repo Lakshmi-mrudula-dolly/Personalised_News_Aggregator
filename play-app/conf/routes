@@ -20,6 +20,7 @@ GET     /api/news/category/:category/:language     controllers.NewsController.ge
 
 # Fetch personalized news feed based on user preferences
 GET     /api/news/my-feed   controllers.NewsController.getMyFeed(request: play.mvc.Http.Request)
+POST    /api/user/clicked-news    controllers.UserController.storeClickedNews(request: play.mvc.Http.Request)
 
 
 # Update likes/dislikes for a news cat

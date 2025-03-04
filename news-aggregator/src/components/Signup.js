@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Typography, Container, Box, Alert, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
-import backgroundImage from './Images/img1.jpeg';
+import backgroundImage from './Images/img4.webp';
 
 function Signup() {
   const [username, setUsername] = useState("");

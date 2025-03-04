@@ -77,4 +77,19 @@ public class UserService {
         }
         return false;
     }
+    public boolean storeClickedNews(String email, String title) {
+        MongoDatabase database = mongoClient.getDatabase("newsApp");
+        MongoCollection<Document> users = database.getCollection("users");
+    
+        Document user = users.find(new Document("email", email)).first();
+        if (user != null) {
+            Document update = new Document("$addToSet", new Document("clicked_titles", title)); // Store title only
+    
+            users.updateOne(new Document("email", email), update);
+            return true;
+        }
+        return false;
+    }
+      
+    
 }
