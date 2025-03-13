@@ -33,7 +33,7 @@ public class NewsController extends Controller {
     return newsService.fetchNewsForUser(categories.split(","), language)
             .thenApply(newsJson -> ok(newsJson));
 }
-// Update likes/dislikes for a news category
+  
 
 }
 /*private static final String API_KEY = "22fe63d43e1d3df803e7327e6eb1ca6f3ecab2565f3b76daca245331e7e05179";

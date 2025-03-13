@@ -12,6 +12,8 @@ import org.bson.Document;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
+import static com.mongodb.client.model.Filters.eq;
+
 
 public class UserController extends Controller {
 
@@ -154,4 +156,72 @@ private void callRecommenderSystem(String email) {
             return internalServerError(Json.newObject().put("error", "Failed to store clicked news"));
         }
     }
+
+    public Result subscribe(Http.Request request) {
+        JsonNode json = request.body().asJson();
+        if (json == null || !json.has("email")) {
+            return badRequest(Json.newObject().put("error", "Email is required"));
+        }
+    
+        String email = json.get("email").asText();
+        boolean isSubscribed = userService.subscribeUser(email);
+    
+        if (isSubscribed) {
+            return ok(Json.newObject().put("message", "Subscription successful"));
+        } else {
+            return internalServerError(Json.newObject().put("error", "Subscription failed"));
+        }
+    }
+    public Result getBookmarks(Http.Request request) {
+        JsonNode json = request.body().asJson();
+        if (json == null || !json.has("email")) {
+            return badRequest(Json.newObject().put("error", "Email is required"));
+        }
+    
+        String email = json.get("email").asText();
+        Document user = userService.getUserDetails(email); // ✅ Fetch user details through UserService
+    
+        if (user == null) {
+            return notFound(Json.newObject().put("error", "User not found"));
+        }
+    
+        boolean isSubscribed = user.getBoolean("isSubscribed", true);
+        List<String> bookmarks = user.getList("bookmarks", String.class, Collections.emptyList());
+    
+        ObjectNode response = Json.newObject();
+        response.put("subscribed", isSubscribed);
+        response.set("bookmarks", Json.toJson(bookmarks));
+    
+        return ok(response);
+    }
+    
+    
+    
+    public CompletionStage<Result> likeArticle(Http.Request request) {
+        JsonNode json = request.body().asJson();
+        String email = json.get("email").asText();
+        String category = json.get("category").asText();
+        return userService.updateCategoryCount(email, category, 1)
+                .thenApply(result -> ok("Category count updated"));
+    }
+
+    // Dislike an article (Decrease category count)
+    public CompletionStage<Result> dislikeArticle(Http.Request request) {
+        JsonNode json = request.body().asJson();
+        String email = json.get("email").asText();
+        String category = json.get("category").asText();
+        return userService.updateCategoryCount(email, category, -1)
+                .thenApply(result -> ok("Category count updated"));
+    }
+
+    // Bookmark an article
+    public CompletionStage<Result> bookmarkArticle(Http.Request request) {
+        JsonNode json = request.body().asJson();
+        String email = json.get("email").asText();
+        String title = json.get("title").asText();
+        return userService.addBookmark(email, title)
+                .thenApply(result -> ok("Bookmark updated"));
+    }
+    
+    
 }

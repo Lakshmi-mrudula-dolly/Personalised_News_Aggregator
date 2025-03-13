@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Card, CardContent, Typography, Select, MenuItem } from "@mui/material";
+import { Card, CardContent, Typography, Select, MenuItem, Button } from "@mui/material";
 import axios from "axios";
 
 const CategoryPage = ({ user }) => {
@@ -15,14 +15,11 @@ const CategoryPage = ({ user }) => {
   const fetchNews = useCallback(async () => {
     try {
       const response = await fetch(`http://localhost:9000/api/news/category/${category}/${language}`);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const data = await response.json();
       console.log("API Response:", data);
-
       setNews(data.news_results || []);
     } catch (error) {
       console.error("Error fetching news:", error);
@@ -34,27 +31,51 @@ const CategoryPage = ({ user }) => {
     fetchNews();
   }, [fetchNews]);
 
-  // Handle news click to store in backend
+  // Store clicked news in backend
   const handleNewsClick = async (article) => {
     try {
-      if (!email) {
-        throw new Error("User email not found in session.");
-      }
-
-      if (!article.title) {
-        throw new Error("Article has no title.");
-      }
+      if (!email) throw new Error("User email not found in session.");
+      if (!article.title) throw new Error("Article has no title.");
 
       console.log("Sending clicked news to backend:", article.title);
-
-      await axios.post("http://localhost:9000/api/user/clicked-news", {
-        email,
-        title: article.title,
-      });
-
+      await axios.post("http://localhost:9000/api/user/clicked-news", { email, title: article.title });
       console.log("Successfully stored clicked news:", article.title);
     } catch (error) {
       console.error("Error in handleNewsClick:", error.message);
+    }
+  };
+
+  // Increase category count for Like
+  const handleLike = async (article) => {
+    try {
+      if (!email) throw new Error("User email not found in session.");
+      await axios.post("http://localhost:9000/api/user/like", { email, category });
+      console.log("Liked article:", article.title);
+    } catch (error) {
+      console.error("Error in handleLike:", error.message);
+    }
+  };
+
+  // Decrease category count for Dislike
+  const handleDislike = async (article) => {
+    try {
+      if (!email) throw new Error("User email not found in session.");
+      await axios.post("http://localhost:9000/api/user/dislike", { email, category });
+      console.log("Disliked article:", article.title);
+    } catch (error) {
+      console.error("Error in handleDislike:", error.message);
+    }
+  };
+
+  // Add article title to bookmarks (circular queue of max 20 items)
+  const handleBookmark = async (article) => {
+    try {
+      if (!email) throw new Error("User email not found in session.");
+      if (!article.title) throw new Error("Article has no title.");
+      await axios.post("http://localhost:9000/api/user/bookmark", { email, title: article.title });
+      console.log("Bookmarked article:", article.title);
+    } catch (error) {
+      console.error("Error in handleBookmark:", error.message);
     }
   };
 
@@ -109,13 +130,24 @@ const CategoryPage = ({ user }) => {
                 rel="noopener noreferrer"
                 style={{ color: "blue" }}
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent default link behavior
+                  e.preventDefault();
                   handleNewsClick(article); // Store click in backend
-                  window.open(article.link, "_blank"); // Open link in a new tab
+                  window.open(article.link, "_blank"); // Open link in new tab
                 }}
               >
                 Read More
               </a>
+              <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" color="primary" sx={{ mr: 1 }} onClick={() => handleLike(article)}>
+                  👍 Like
+                </Button>
+                <Button variant="outlined" color="secondary" sx={{ mr: 1 }} onClick={() => handleDislike(article)}>
+                  👎 Dislike
+                </Button>
+                <Button variant="outlined" onClick={() => handleBookmark(article)}>
+                  🔖 Bookmark
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))

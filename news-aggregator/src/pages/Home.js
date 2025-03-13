@@ -5,6 +5,8 @@ import { AccountCircle, Feed, Business, Sports, Tv, Public, Newspaper, Theaters,
 import MyAccount from "./MyAccount";
 import MyFeed from "./MyFeed";
 import CategoryPage from "./CategoryPage";
+import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import icon
+import Bookmarks from "./Bookmarks";
 
 const categories = [
   { name: "Business", icon: <Business /> },
@@ -76,6 +78,11 @@ const Home = ({ onLogout }) => {
             <ListItemIcon sx={{ color: "white" }}><ExitToApp /></ListItemIcon>
             <ListItemText sx={{ color: "white" }} primary="Logout" />
           </ListItem>
+
+          <ListItem button component={Link} to="/bookmarks" sx={{ "&:hover": { background: "#455a64" } }}>
+            <ListItemIcon sx={{ color: "white" }}><BookmarkIcon /></ListItemIcon>
+            <ListItemText sx={{ color: "white" }} primary="Bookmarks" />
+          </ListItem>
         </List>
       </Drawer>
 
@@ -94,6 +101,7 @@ const Home = ({ onLogout }) => {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/my-feed" element={<MyFeed />} />
           <Route path="/category/:category" element={<CategoryPage />} />
+          <Route path="/bookmarks" element={<Bookmarks />} />
         </Routes>
       </Container>
     </>

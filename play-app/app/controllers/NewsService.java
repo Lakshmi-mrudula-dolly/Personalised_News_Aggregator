@@ -31,4 +31,5 @@ public class NewsService {
         return ws.url(url).get().thenApply(WSResponse::asJson);
     }
     
+    
 }

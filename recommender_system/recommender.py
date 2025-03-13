@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
 from sklearn.svm import SVC
 from sklearn.preprocessing import LabelEncoder
 import joblib
@@ -60,4 +61,7 @@ joblib.dump(label_encoder, "models/label_encoder.pkl")
 
 # Test Model
 accuracy = model.score(X_test, y_test)
+y_pred = model.predict(X_test)
+
+print(metrics.classification_report(y_test, y_pred))
 print(f"Model trained successfully! Accuracy: {accuracy * 100:.2f}%")

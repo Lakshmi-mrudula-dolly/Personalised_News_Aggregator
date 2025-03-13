@@ -23,7 +23,19 @@ GET     /api/news/my-feed   controllers.NewsController.getMyFeed(request: play.m
 POST    /api/user/clicked-news    controllers.UserController.storeClickedNews(request: play.mvc.Http.Request)
 
 
-# Update likes/dislikes for a news cat
+POST    /api/user/subscribe    controllers.UserController.subscribe(request: play.mvc.Http.Request)
+
+POST    /api/user/bookmarked-news    controllers.UserController.getBookmarks(request: play.mvc.Http.Request)
+
+POST    /api/user/like       controllers.UserController.likeArticle(request: play.mvc.Http.Request)
+POST    /api/user/dislike    controllers.UserController.dislikeArticle(request: play.mvc.Http.Request)
+POST    /api/user/bookmark   controllers.UserController.bookmarkArticle(request: play.mvc.Http.Request)
+POST   /get-bookmarks   controllers.UserController.getBookmarks(request: play.mvc.Http.Request)
+
+
+
+
+
 
 
 

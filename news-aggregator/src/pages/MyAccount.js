@@ -5,7 +5,7 @@ import { Container, Typography, Checkbox, FormControlLabel, Button, Paper } from
 const categories = ["Business", "Technology", "Sports", "Entertainment", "National", "International", "Politics"];
 
 const MyAccount = () => {
-  const [user, setUser] = useState({ name: "", email: "", preferences: [] });
+  const [user, setUser] = useState({ name: "", email: "", preferences: [], isSubscribed: false });
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const email = sessionStorage.getItem("email"); // Retrieve email from sessionStorage
 
@@ -37,6 +37,16 @@ const MyAccount = () => {
       .catch((error) => console.error("Error updating preferences:", error));
   };
 
+  const handleSubscribe = () => {
+    axios
+      .post("http://localhost:9000/api/user/subscribe", { email })
+      .then(() => {
+        alert("Subscription successful!");
+        setUser((prev) => ({ ...prev, isSubscribed: true }));
+      })
+      .catch((error) => console.error("Error subscribing:", error));
+  };
+
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} style={{ padding: 20, marginTop: 20 }}>
@@ -66,6 +76,17 @@ const MyAccount = () => {
         <Button variant="contained" color="primary" onClick={handleUpdatePreferences} style={{ marginTop: 20 }}>
           Update Preferences
         </Button>
+
+        {!user.isSubscribed && (
+          <>
+            <Typography variant="body2" style={{ marginTop: 20, color: "red" }}>
+              Subscribe to bookmark news articles
+            </Typography>
+            <Button variant="contained" color="secondary" onClick={handleSubscribe} style={{ marginTop: 10 }}>
+              Subscribe Now
+            </Button>
+          </>
+        )}
       </Paper>
     </Container>
   );
